@@ -1,0 +1,20 @@
+PostgreSQL connection details
+=============================
+
+Host:      localhost
+Port:      5432
+Database:  ecommerce_streaming
+User:      streaming_user
+Password:  streaming_pass
+
+JDBC URL (used by Spark):  jdbc:postgresql://localhost:5432/ecommerce_streaming
+
+Tables:
+  events           clean, valid events from the stream
+  events_staging   temporary landing table for each micro-batch
+  rejected_events  rows that failed validation, with the reason
+
+These credentials are for a LOCAL practice database created by
+sql/postgres_setup.sql, and are included because the project brief asks
+for them. In a real project, credentials are never committed: the code
+reads them from the .env file, which Git ignores.

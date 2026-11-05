@@ -4,77 +4,37 @@
 
 In this project, you'll build a real-time data pipeline that simulates an e-commerce platform tracking user activity. You'll generate fake user events (like product views and purchases), stream them using Apache Spark Structured Streaming, and store the processed data in a PostgreSQL database.
 
-You'll gain practical experience with:
+## Proposed Project Structure
 
-- Real-time data streaming
-- Data transformation using Spark
-- Writing to a relational database
-- Handling continuously arriving data
-
----
-
-## Project Objectives
-
-By the end of this project, you will be able to:
-
-- Simulate and ingest streaming data
-- Use Spark Structured Streaming to process data in real time
-- Store and verify processed data in a PostgreSQL database
-- Understand the architecture of a real-time data pipeline
-- Measure and evaluate system performance
-
----
-
-## Tools & Technologies
-
-- Apache Spark Structured Streaming
-- PostgreSQL
-- Python (for data generation)
-- SQL (for database setup)
-
----
-
-## Project Structure
-
-### Part 1: Simulate Data
-
-- Write a script that creates fake e-commerce events (CSV files).
-- These events include user actions like `"view"` or `"purchase"`, along with product info and timestamps.
-
-### Part 2: Stream with Spark
-
-- Use Spark Structured Streaming to monitor the folder where CSVs are saved.
-- Read and process new CSV files as they appear.
-- Apply any needed transformations (e.g., data cleaning, type conversion).
-
-### Part 3: Store in PostgreSQL
-
-- Set up a PostgreSQL database and create a table to store incoming events.
-- Connect Spark to the database.
-- Insert processed data into the table in real time.
-
----
-
-## Project Deliverables
-
-| Deliverable | Description |
-|---|---|
-| `data_generator.py` | Python script to generate CSV event data |
-| `spark_streaming_to_postgres.py` | Spark Structured Streaming job to process and write data |
-| `postgres_setup.sql` | SQL script to create database and table |
-| `postgres_connection_details.txt` | Text file with host, port, user, and password |
-| `project_overview.md` | Short write-up explaining your system's components and flow |
-| `user_guide.md` | Step-by-step instructions on how to run your project |
-| `test_cases.md` | Manual test plan with expected vs actual outcomes |
-| `performance_metrics.md` | Report with system performance data (latency, throughput, etc.) |
-| `system_architecture.png` | Diagram showing data flow and components |
-
----
-
-## What to Test
-
-- Are the CSV files being generated correctly?
-- Is Spark detecting and processing new files?
-- Are the data transformations correct?
-- Is data being written into PostgreSQL without errors?
-- Are performance metrics (like processing speed) within expected limits?
+```
+Spark-Ecommerce-Streaming/
+├── data/
+│   ├── incoming/                     # generator writes CSVs here; Spark watches it
+│   ├── checkpoints/                  # Spark's record of processed files (not committed)
+│   └── metrics/                      # per-batch performance logs (for performance_metrics.md)
+├── src/
+│   ├── __init__.py
+│   ├── config.py                     # folders, event types, rates, Postgres settings from .env
+│   ├── spark_session.py              # reused from TMDB, plus the Postgres JDBC driver
+│   ├── schemas.py                    # schema of the CSV events
+│   ├── transform.py                  # cleaning/validation functions (testable on their own)
+│   └── metrics.py                    # listener that logs each batch's throughput and duration
+├── sql/
+│   ├── postgres_setup.sql            # DELIVERABLE: creates database, user and tables
+│   └── verification_queries.sql      # queries to check the data and measure latency
+├── docs/
+│   ├── project_overview.md           # DELIVERABLE
+│   ├── user_guide.md                 # DELIVERABLE
+│   ├── test_cases.md                 # DELIVERABLE
+│   ├── performance_metrics.md        # DELIVERABLE
+│   └── system_architecture.png       # DELIVERABLE
+├── data_generator.py                 # DELIVERABLE: Part 1
+├── spark_streaming_to_postgres.py    # DELIVERABLE: Parts 2 and 3
+├── postgres_connection_details.txt   # DELIVERABLE: host, port, user, password (local only)
+├── check_setup.py                    # reused, plus a Postgres connection check
+├── docker-compose.yml                # runs Postgres (if we use Docker, see below)
+├── requirements.txt
+├── .env.example
+├── .gitignore
+└── README.md
+```
