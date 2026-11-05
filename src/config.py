@@ -23,6 +23,37 @@ DATA_DIR = PROJECT_ROOT / "data"
 INCOMING_DIR = DATA_DIR / "incoming"        # the generator writes CSVs here; Spark watches it
 CHECKPOINT_DIR = DATA_DIR / "checkpoints"   # Spark's record of which files it has processed
 METRICS_DIR = DATA_DIR / "metrics"          # per-batch performance logs
+TEMP_DIR = DATA_DIR / "tmp"                 # the generator writes each file here first
+
+# The generator's record of every file it wrote: how many valid, messy,
+# invalid and duplicate rows each one contains (the answer key for testing)
+GENERATOR_LOG = METRICS_DIR / "generator_log.csv"
+
+# ----------------------------------------------------------------------
+# Events
+# ----------------------------------------------------------------------
+
+# The columns of every CSV file, in order
+CSV_COLUMNS = [
+    "event_id", "event_time", "user_id", "session_id", "event_type",
+    "product_id", "product_name", "category", "price", "quantity",
+]
+
+# The only event types the pipeline accepts (the events table enforces this too)
+EVENT_TYPES = ["view", "add_to_cart", "purchase"]
+
+# Format of event_time in the CSV files (millisecond precision for latency measurements)
+EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+
+# ----------------------------------------------------------------------
+# Data generator defaults (each can be changed on the command line)
+# ----------------------------------------------------------------------
+
+EVENTS_PER_FILE = 50        # rows in each CSV file
+FILE_INTERVAL_SECONDS = 5   # pause between files
+INVALID_ROW_RATE = 0.05     # share of rows that break a rule (should be rejected)
+DUPLICATE_ROW_RATE = 0.02   # share of rows that repeat a recent event (should be stored once)
+MESSY_ROW_RATE = 0.05       # share of valid rows with messy formatting (should be cleaned and kept)
 
 # ----------------------------------------------------------------------
 # Spark settings

@@ -12,6 +12,7 @@ data/incoming/
 data/checkpoints/
 data/spark_write_test/
 jars/
+data/tmp/
 spark-warehouse/
 metastore_db/
 derby.log
