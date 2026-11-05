@@ -1,0 +1,24 @@
+# Secrets
+.env
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+# Streaming data and Spark state (recreated on every run)
+data/incoming/
+data/checkpoints/
+data/spark_write_test/
+jars/
+spark-warehouse/
+metastore_db/
+derby.log
+*.crc
+
+# Editors and OS files
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
