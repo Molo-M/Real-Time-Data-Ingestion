@@ -65,17 +65,19 @@ def watch(query, seconds=30, every=5):
         time.sleep(every)
 
 
-def wait_until_caught_up(timeout=180):
+def wait_until_caught_up(timeout=180, quiet=False):
     """Wait until the stream has processed every row the generator wrote.
     Stop the generator first, otherwise there is always more to catch up on."""
     deadline = time.time() + timeout
     while time.time() < deadline:
         expected, done = expected_totals()["rows"], rows_processed()
         if expected > 0 and done >= expected:
-            print(f"Caught up: {done} of {expected} rows processed.")
+            if not quiet:
+                print(f"Caught up: {done} of {expected} rows processed.")
             return
-        print(f"Processed {done} of {expected} rows ...")
-        time.sleep(5)
+        if not quiet:
+            print(f"Processed {done} of {expected} rows ...")
+        time.sleep(1 if quiet else 5)
     raise TimeoutError("The stream didn't catch up in time.")
 
 

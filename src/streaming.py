@@ -9,8 +9,9 @@ import shutil
 
 from pyspark.sql import functions as F
 
-from src.config import (BATCH_LOG, GENERATOR_LOG, INCOMING_DIR, MAX_FILES_PER_TRIGGER, STREAM_CHECKPOINT,
-                        TEMP_DIR, TRIGGER_INTERVAL)
+from src.config import (BATCH_LOG, GENERATOR_LOG, INCOMING_DIR, MAX_FILES_PER_TRIGGER, PROGRESS_LOG,
+                        STREAM_CHECKPOINT, TEMP_DIR, TRIGGER_INTERVAL)
+from src.metrics import attach_progress_logger
 from src.postgres_sink import empty_tables, write_batch
 from src.schemas import RAW_EVENT_SCHEMA
 
@@ -35,6 +36,8 @@ def start_stream(spark, trigger_interval=TRIGGER_INTERVAL):
     """Start the stream in the background and return it (a StreamingQuery).
     The checkpoint folder is how Spark remembers which files it has already
     processed, so a restarted stream continues where it stopped."""
+    # Record Spark's progress report for every batch in data/metrics/progress_log.csv
+    attach_progress_logger(spark)
     return (
         read_event_stream(spark)
         .writeStream
@@ -48,10 +51,10 @@ def start_stream(spark, trigger_interval=TRIGGER_INTERVAL):
 
 def reset_pipeline():
     """Start from scratch: empty the tables, and delete the incoming files,
-    Spark's checkpoint and both logs, so the generator log only describes
+    Spark's checkpoint and the logs, so the generator log only describes
     the files of the new run (it's the answer key for checking the results)."""
     empty_tables()
     for folder in (INCOMING_DIR, TEMP_DIR, STREAM_CHECKPOINT):
         shutil.rmtree(folder, ignore_errors=True)
-    BATCH_LOG.unlink(missing_ok=True)
-    GENERATOR_LOG.unlink(missing_ok=True)
+    for log in (BATCH_LOG, GENERATOR_LOG, PROGRESS_LOG):
+        log.unlink(missing_ok=True)

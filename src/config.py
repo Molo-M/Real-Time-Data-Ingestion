@@ -28,6 +28,9 @@ TEMP_DIR = DATA_DIR / "tmp"                 # the generator writes each file her
 # The stream's record of every micro-batch it wrote to PostgreSQL
 BATCH_LOG = METRICS_DIR / "batch_log.csv"
 
+# Spark's own progress report for every micro-batch (speed and time per stage)
+PROGRESS_LOG = METRICS_DIR / "progress_log.csv"
+
 # The generator's record of every file it wrote: how many valid, messy,
 # invalid and duplicate rows each one contains (the answer key for testing)
 GENERATOR_LOG = METRICS_DIR / "generator_log.csv"

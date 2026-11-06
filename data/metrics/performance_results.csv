@@ -1,0 +1,6 @@
+scenario,target_events_per_s,events_generated,events_stored,rejected_stored,results_correct,batches,avg_rows_per_batch,avg_batch_s,max_batch_s,batches_over_trigger,processing_rate_per_s,write_share_pct,catch_up_s,wall_s,latency_avg_s,latency_median_s,latency_p95_s,latency_max_s,latency_until_spark_s,latency_writing_s,batches_logged
+Low (10 events/s),10,600,553,34,True,12,50,4.66,5.66,2,11,54,5.0,60.1,5.37,5.25,6.31,6.31,4.31,1.06,12
+Medium (100 events/s),100,6000,5577,315,True,13,462,4.59,4.98,0,100,54,8.1,66.1,6.84,6.93,9.03,9.19,5.77,1.07,13
+"High (1,000 events/s)",1000,60000,55889,2966,True,12,5000,5.52,6.61,11,906,62,8.1,67.2,7.64,7.75,10.31,11.18,5.93,1.71,12
+"Very high (5,000 events/s)",5000,300000,278962,15071,True,8,37500,7.82,8.2,8,4796,74,8.1,67.3,10.08,9.99,13.75,14.19,7.66,2.42,8
+"Backlog (50,000 events at once)",-,50000,46563,2476,True,1,50000,7.14,7.14,1,6999,76,0,8.0,,,,,,,1
