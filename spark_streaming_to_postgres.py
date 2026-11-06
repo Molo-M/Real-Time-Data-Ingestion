@@ -19,8 +19,9 @@ same checkpoint (Spark's record of processed files).
 """
 
 import argparse
-import time
 import logging
+import time
+
 from py4j.protocol import Py4JError
 
 from src.config import INCOMING_DIR, TRIGGER_INTERVAL
@@ -39,11 +40,9 @@ def parse_args():
 def shutdown(spark, query):
     """Stop the stream and Spark, and return the stream's error if it failed.
 
-    
     On Windows, Ctrl+C reaches every program in the terminal, including Spark's
     Java process, which may shut itself down before Python gets here. So each
     step is attempted, and "Spark has already stopped" is treated as fine."""
-
     # Py4J prints the "connection closed" error before the script handles it,
     # which makes a normal shutdown look like a crash, so hide its messages
     logging.disable(logging.CRITICAL)

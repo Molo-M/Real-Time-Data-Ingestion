@@ -68,6 +68,8 @@ def measure(name, target_rate, wall_seconds, catch_up_seconds, include_latency=T
     batches = monitor.read_log(BATCH_LOG)
     rows = sum(int(p["num_input_rows"]) for p in progress)
     batch_seconds = [int(p["trigger_ms"]) / 1000 for p in progress]
+    # Share of batch time spent in write_batch() (cleaning, counting and writing);
+    # the rest is Spark finding new files, planning and updating its checkpoint
     write_share = (sum(int(p["add_batch_ms"]) for p in progress) / max(sum(int(p["trigger_ms"]) for p in progress), 1))
     latency = latency_summary() if include_latency else {}
     counts = table_counts()
@@ -156,7 +158,7 @@ def save(results):
     lines = [
         "### Throughput and batch processing", "",
         "| Scenario | Events generated | Batches | Avg rows/batch | Avg batch time (s) | Slowest batch (s) "
-        "| Batches over trigger | Processing rate (events/s) | Time writing to PostgreSQL | Caught up after generator stopped (s) | Results correct |",
+        "| Batches over trigger | Processing rate (events/s) | Time in write_batch() | Caught up after generator stopped (s) | Results correct |",
         "|---|---|---|---|---|---|---|---|---|---|---|",
     ]
     for r in results:

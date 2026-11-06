@@ -1,6 +1,6 @@
 ### Throughput and batch processing
 
-| Scenario | Events generated | Batches | Avg rows/batch | Avg batch time (s) | Slowest batch (s) | Batches over trigger | Processing rate (events/s) | Time writing to PostgreSQL | Caught up after generator stopped (s) | Results correct |
+| Scenario | Events generated | Batches | Avg rows/batch | Avg batch time (s) | Slowest batch (s) | Batches over trigger | Processing rate (events/s) | Time in write_batch() | Caught up after generator stopped (s) | Results correct |
 |---|---|---|---|---|---|---|---|---|---|---|
 | Low (10 events/s) | 600 | 12 | 50 | 4.66 | 5.66 | 2 | 11 | 54% | 5.0 | Yes |
 | Medium (100 events/s) | 6,000 | 13 | 462 | 4.59 | 4.98 | 0 | 100 | 54% | 8.1 | Yes |
