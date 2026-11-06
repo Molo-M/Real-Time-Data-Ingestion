@@ -25,6 +25,12 @@ CHECKPOINT_DIR = DATA_DIR / "checkpoints"   # Spark's record of which files it h
 METRICS_DIR = DATA_DIR / "metrics"          # per-batch performance logs
 TEMP_DIR = DATA_DIR / "tmp"                 # the generator writes each file here first
 
+# The stream's record of every micro-batch it wrote to PostgreSQL
+BATCH_LOG = METRICS_DIR / "batch_log.csv"
+
+# Spark's own progress report for every micro-batch (speed and time per stage)
+PROGRESS_LOG = METRICS_DIR / "progress_log.csv"
+
 # The generator's record of every file it wrote: how many valid, messy,
 # invalid and duplicate rows each one contains (the answer key for testing)
 GENERATOR_LOG = METRICS_DIR / "generator_log.csv"
@@ -42,8 +48,10 @@ CSV_COLUMNS = [
 # The only event types the pipeline accepts (the events table enforces this too)
 EVENT_TYPES = ["view", "add_to_cart", "purchase"]
 
-# Format of event_time in the CSV files (millisecond precision for latency measurements)
+# Format of event_time in the CSV files (millisecond precision for latency measurements).
+# The first is Python's version (for the generator), the second Spark's (for parsing).
 EVENT_TIME_FORMAT = "%Y-%m-%d %H:%M:%S.%f"
+SPARK_TIME_FORMATS = ["yyyy-MM-dd HH:mm:ss.SSS", "yyyy-MM-dd HH:mm:ss"]
 
 # ----------------------------------------------------------------------
 # Data generator defaults (each can be changed on the command line)
@@ -67,6 +75,15 @@ SPARK_MASTER = "local[*]"
 # Spark's default of 200 partitions after a shuffle is meant for large
 # clusters. Each micro-batch here is small, so 4 is much faster.
 SHUFFLE_PARTITIONS = 4
+
+# How often the stream checks data/incoming/ for new files, and the most
+# files it takes into one micro-batch (so a backlog is processed in steps)
+TRIGGER_INTERVAL = "5 seconds"
+MAX_FILES_PER_TRIGGER = 20
+
+# Spark's progress record for the stream: which files it has already processed.
+# Deleting this folder makes Spark treat every file as new again.
+STREAM_CHECKPOINT = CHECKPOINT_DIR / "events_to_postgres"
 
 # The PostgreSQL JDBC driver, which lets Spark talk to PostgreSQL.
 # It's downloaded from Maven Central into the jars/ folder the first time
@@ -95,6 +112,9 @@ JDBC_PROPERTIES = {
     "user": PG_USER,
     "password": PG_PASSWORD,
     "driver": "org.postgresql.Driver",
+    # Spark sends text values as plain strings. This lets PostgreSQL convert
+    # them to the column's own type, e.g. event_id text -> UUID column.
+    "stringtype": "unspecified",
 }
 
 # Python connects directly with psycopg (used for SQL that Spark's JDBC

@@ -23,3 +23,8 @@ derby.log
 .idea/
 .DS_Store
 Thumbs.db
+
+# Raw logs, rewritten on every run (the summaries in data/metrics/ are committed)
+data/metrics/batch_log.csv
+data/metrics/progress_log.csv
+data/metrics/generator_log.csv
