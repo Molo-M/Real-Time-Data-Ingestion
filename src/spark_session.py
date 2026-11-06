@@ -64,4 +64,10 @@ def get_spark():
     level = jvm.org.apache.logging.log4j.Level
     configurator.setLevel("org.apache.spark.util.ShutdownHookManager", level.OFF)
     configurator.setLevel("org.apache.spark.SparkEnv", level.ERROR)
+
+    # Two harmless warnings printed whenever a stream starts: one says a batch-only
+    # optimization is switched off for streams, the other that a long internal
+    # description of the query was shortened
+    configurator.setLevel("org.apache.spark.sql.execution.streaming.runtime.ResolveWriteToStream", level.ERROR)
+    configurator.setLevel("org.apache.spark.util.SparkStringUtils", level.ERROR)
     return spark
